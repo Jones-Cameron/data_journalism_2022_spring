@@ -33,6 +33,22 @@ install.packages("tidyverse")
 library(tidyverse)
 ```
 
+## Things I learnd on Feb. 1
+
+Lubridate is an R package that makes it easier to work with dates and times (part of the tidyverse)
+
+Mutate code means add a new column, add or replace values in a column that exists or a new one we are making. 
+Done by the code "mutate(name_of_column) = value)". Can name code anything you want but make it meaningful
+
+You can then add an arrange column to arrange the new column in descending (or ascending order)
+
+function "filter()" is a tidyverse verb that uses criteria you supply to return a subset of the original data. Can help you search for something within a column. "filter(column_name == 'Thing im looking for'), `filter(COLUMN_NAME OPERATOR CRITERIA)
+
+function "if_else()" statements used similarly to Javascript
+
+function "case_when()" helps group things together (put things in different buckets, as prof said, see task 9 prelab)
+
+
 
 
 
