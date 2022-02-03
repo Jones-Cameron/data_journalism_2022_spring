@@ -48,6 +48,7 @@ function "if_else()" statements used similarly to Javascript
 
 function "case_when()" helps group things together (put things in different buckets, as prof said, see task 9 prelab)
 
+Use glimpse to check if a column is actully a date column, if not, use lubridate to make them dates (task 14 pre lab 02)
 
 
 
