@@ -83,21 +83,27 @@ west_virginia_undisbursed_amount %>%
 ```
 
 **Q3** What are some potential reasons why a loan might not be paid out? What questions does that circumstance raise for you?
-**A3** [write your answer here]
+**A3** Trouble with paperwork, something comes up after being approved for the loan that makes that company no longer eligible. Additionally, it a bit suspicious of the lender. In our data, only 13 laons are unpaid out, and 12 of those are from the same lender. Makes me suspicious of Davis Trust Company. 
 
 
 **Q4** Which month in 2021 had the most loans approved?
-**A4** [write your answer here]
+**A4** Looks like in 2021 it was March. Not sure how to order by the date, so will need help on that one. 
 
 ```{r}
 # Write the code to produce your answer here
-
+west_virginia_ppp %>% 
+  mutate(Month = floor_date(date_approved, "month")) %>%
+  group_by(date_approved) %>%
+  summarise(total = n()) %>%
+  arrange(desc(total))
 ```
 
 **Q5** How many loans went to West Virginia applicants that listed the maximum number of jobs retained (500)? Which one had the earliest approved date?
-**A5** [write your answer here]
+**A5** 10, J. AUSTIN HEATING & COOLING, INC. on April, 8 2020
 
 ```{r}
 # Write the code to produce your answer here
-
+west_virginia_ppp %>% 
+  filter(jobs_retained == 500 )
+    
 ```
