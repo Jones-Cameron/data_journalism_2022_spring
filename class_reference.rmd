@@ -51,5 +51,19 @@ function "case_when()" helps group things together (put things in different buck
 Use glimpse to check if a column is actully a date column, if not, use lubridate to make them dates (task 14 pre lab 02)
 
 
+## Things from pre-lab 03
+
+use the guess_max() function as an argument to use the first 10 rows to set the data type
+
+<dbl> changes to <chr> when using mutate(id = as.character(column name))
+
+clean names standardizes column names
+
+distinct() gets rid of duplicate rows.
+
+str_sub() to convert the ZIP codes that have nine digits to five digits, task 13
+
+str_tot_title() to standarize capitalization in the "city" field
+
 
 
