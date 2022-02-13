@@ -59,6 +59,8 @@ use the guess_max() function as an argument to use the first 10 rows to set the 
 
 clean names standardizes column names
 
+then use rename() to change the "example" column
+
 distinct() gets rid of duplicate rows.
 
 str_sub() to convert the ZIP codes that have nine digits to five digits, task 13
