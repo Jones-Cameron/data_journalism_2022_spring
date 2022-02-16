@@ -68,4 +68,24 @@ str_sub() to convert the ZIP codes that have nine digits to five digits, task 13
 str_tot_title() to standarize capitalization in the "city" field
 
 
+## Notes on lab 03
 
+how many, how mucg --> group by or summarize
+muatate is for capitalizations, spellings
+filter is finding specific strings or data points
+
+```{r}
+
+my_result <- original_data %>%
+  filter(some_column == "string value") %>%
+  mutate(some_column=str_to_title(some_column)) %>%
+  group_by(some_column) %>%
+  summarise(new_agregated_data)
+```
+
+
+## Notes on Feb 15
+
+"bind_rows" helps combine multiple data frames (prelab 4), only works if title columns are the same name 
+
+mutate(across(ZCTA5N, as.character)) changes the whole ZCTA column to a character column
