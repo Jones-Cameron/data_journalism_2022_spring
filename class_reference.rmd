@@ -89,3 +89,6 @@ my_result <- original_data %>%
 "bind_rows" helps combine multiple data frames (prelab 4), only works if title columns are the same name 
 
 mutate(across(ZCTA5N, as.character)) changes the whole ZCTA column to a character column
+
+## Notes on Feb 22
+
