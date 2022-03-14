@@ -102,7 +102,7 @@ states_url <- "https://dwillis.github.io/jour472files/ppp_scraping_example/index
 
 statetable <- states_html[[1]]
 
-statetablel <- tibble()
+statetable <- tibble()
   for(row_number in 1:nrow(states_html)) {
     each_row_df <- states_html %>% 
       slice(row_number)
@@ -121,4 +121,5 @@ statetablel <- tibble()
 statetable <- statetable %>% 
   mutate()
 
+## thought i coded correctly, unsure of what the error message is
 ```
