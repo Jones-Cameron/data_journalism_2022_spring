@@ -118,6 +118,7 @@ statetable <- tibble()
           bind_rows(singlestateinfo)
         
   }
+
 statetable <- statetable %>% 
   mutate()
 
