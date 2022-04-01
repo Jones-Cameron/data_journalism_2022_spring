@@ -22,9 +22,6 @@ Let's revisit some data we've used in the past and turn it into charts. First, l
 ### Task 1: Load packages
 **Task** Run the following code to load packages.
 
-```{r}
-library(tidyverse)
-```
 
 The dataset we'll use is the PPP loan data for Maryland.  Let's load it.
 
