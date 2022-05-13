@@ -126,11 +126,10 @@ colorado_ppp %>%
 
 **Q2.** Write R code that examines geographic patterns for PPP loans in your state, using Census population information to calculate a per-capita figure for the state and counties and zip codes. Then, make a county map using ggplot showing the per-capita data and a zip code map showing the difference from the statewide per-capita figure. Describe the most interesting or newsworthy findings based on your exploration.
 
-**A2.** 
+**A2.** An interesting finding I came across was that the area code 80477, which is the city of Steamboat Springs, had over three times the ppp per capita amount than any other zip code. They registered $133,711.685 in amount per capita, with the second highest zip code only regsitering 38,785.062. I researched the city and found that it is home to a ski resort, which would explain the high per capita amount of loans. After all, the population in 80477 is only 76 people. So although only 76 people are registered as living here full-time, the town is overrun with travelers in the winter visiting the Steamboat ski resort and historic Old Town hot springs. 
 
 ```{r}
 ## clean up the zip codes so they are only 5 digits. Also converted to a numeric value. 
-
 colorado_ppp <- colorado_ppp %>% 
   mutate(
     original_zip = zip) %>% 
@@ -139,9 +138,7 @@ colorado_ppp <- colorado_ppp %>%
   mutate(
     zip = as.numeric(zip))
 
-
 ## code to create per-capita figures for the state of Colorado
-
 colorado_state_pop <- get_acs(geography = "state", 
               variables = c(population = "B01001_001"), 
               state = "CO",
@@ -163,42 +160,40 @@ co_whole_state_ppp$state <- str_replace(co_whole_state_ppp$state, "CO", "Colorad
 
 colorado_state_ppp_per_capita <- colorado_state_pop %>% 
   left_join(co_whole_state_ppp, by = c("state")) %>%
+  mutate(
+    per_capita_ppp_amount = total_ppp_amount / population)
   drop_na(population)
 
 ## code to create per capita figures by county
-
-
 colorado_county_pop <- get_acs(geography = "county", 
               variables = c(population = "B01001_001"), 
               state = "CO",
               year = 2019,
               geometry = TRUE)
 colorado_county_pop <- colorado_county_pop %>% 
+  mutate(NAME = toupper(str_remove_all(NAME, " County, Colorado")))
+
+colorado_county_pop <- colorado_county_pop %>% 
   rename(
     project_county_name = NAME,
     population = estimate
   ) %>% 
-  select(project_county_name, population, geometry)
-  mutate(project_county_name = toupper(str_remove_all(project_county_name, " County, Colorado"))
-         ) %>% 
-## not sure why im getting an error for this remove all function. "Error in stri_replace_all_regex(string, pattern, fix_replacement(replacement),  : object 'project_county_name' not found" Ive tried to google it, retype it, look at old labs and I can't seem to find the issue.
+  select(project_county_name, population, geometry) 
+
+colorado_county_pop
     
 co_county_ppp <- colorado_ppp %>% 
   group_by(project_county_name) %>% 
   summarize(
     total_ppp_amount = sum(amount)
   ) 
-
 colorado_county_ppp_per_capita <- colorado_county_pop %>% 
   left_join(co_county_ppp, by = c("project_county_name")) %>% 
   mutate(
-    per_capita_ppp_amount = total_ppp_amount / population
-  ) %>% 
+    per_capita_ppp_amount = total_ppp_amount / population) %>% 
   drop_na(population)
 
-
 #code for per-capita figures by zip code
-
 colorado_zip_pop <- get_acs(geography = "zcta", 
               variables = c(population = "B01001_001"), 
               state = "CO",
@@ -222,10 +217,46 @@ colorado_ppp_by_zip <- colorado_ppp %>%
 colorado_ppp_by_zip_per_capita <- colorado_zip_pop %>% 
   left_join(colorado_ppp_by_zip, by = c("zip")) %>% 
   mutate(
-    ppp_amount_per_capita = total_ppp_amount / population
+    per_capita_ppp_amount = total_ppp_amount / population
   ) %>% 
   drop_na(population)
 
+## county map gg plot using gg plot
+cocounties = counties("CO", cb = TRUE)
+ggplot(cocounties) + 
+  geom_sf(data = colorado_county_ppp_per_capita, aes(fill =  per_capita_ppp_amount)) + 
+  coord_sf(
+    crs = st_crs(4269), 
+    xlim = c(-109.0603, -102.0405), 
+    ylim = c(36.99243, 41.00344), 
+    expand = FALSE, 
+    datum = NA
+    ) +
+  scale_fill_viridis_c(option = "Houston") +
+  theme_minimal() +
+  labs(title = "PPP loans per capita by County")
+  
+## zip codes map using gg plot
+ggplot(cocounties) + 
+  geom_sf(data = colorado_county_pop) + 
+  coord_sf(
+    crs = st_crs(4269), 
+    xlim = c(-109.0603, -102.0405), 
+    ylim = c(36.99243, 41.00344), 
+    expand = FALSE, 
+    datum = NA
+    ) +
+  geom_sf(data = colorado_zip_pop, aes(fill = population)) +
+  coord_sf(
+    crs = st_crs(4269), 
+    xlim = c(-109.0603, -102.0405), 
+    ylim = c(36.99243, 41.00344), 
+    expand = FALSE, 
+    datum = NA
+    ) +
+ scale_fill_viridis_c(option = "magma", trans = "log") +
+  theme_minimal() +
+  labs(title = "PPP loans per capita by five digit Zip Code")
 
 ```
 
@@ -267,6 +298,8 @@ Does the distribution of PPP applications by the top 10 industries (by number of
 Create a county-level map showing the differences between the PPP applications and the Census business data for one of the top 10 industry codes. You can do this either using ggplot or Datawrapper (if the latter, publish that map and include the URL below).
 
 **A4.** The distribution of the top 10 industries does not match up with the number of businesses whatsoever. Even after removing self-employed individuals and sole proprietorship's it is still way off. While getting rid of the individualistic businesses does shrink the gaps, it is super marginal. This could mean that a lot of sole proprietorship business aren't reported to the census or the possibility that these businesses aren't actually self-employers. Three naics_codes have differences greater than 1000, even after eliminating self-employed individuals and sole proprietorship's. These discrepancies point to two things: businesses not being correctly reported or reported at all to the Census or the PPP loan data in Colorado has a lot of faults and errors. 
+
+Other than that there are not many meaningful trends. The discrepancies were pretty large all around, so there isn't necessarily a particular business that seemed suspect, more that the loans themselves/collection of Census data were fraudulent or unreported. As for the map, Adams County and Arapahoe County clearly had the biggest discrepancies in data regarding Beauty Salons. What that means, I'm not entirely sure. 
 
 ```{r}
 ## read in provided zip
@@ -319,18 +352,57 @@ non_solo_statewide_industry <- non_solo_statewide_industry %>%
 
 ## Differences all shrunk, however, they are still large with three of them having differences > 1000
  
-##
+## County-level map for 812112
 counties_naics <- real_naics %>% 
   filter(naics_code == "812112")
+cocounties_naics <- cocounties %>% 
+  rename(
+    fipscty = COUNTYFP) %>% 
+    left_join(counties_naics, by = c("fipscty"))
+cocounties_naics <- cocounties_naics %>% 
+  select(NAME, est) %>% 
+  rename(
+    county = NAME) %>% 
+  mutate(
+    county = str_to_upper(county))
 
+industry_trends_by_county <- colorado_ppp %>% 
+  mutate(
+    naics_code = as.character(naics_code)) %>% 
+  filter(naics_code == "812112") %>% 
+  count(project_county_name) %>% 
+  rename(county = project_county_name)
 
+industry_trends_by_county <- industry_trends_by_county %>% 
+  left_join(cocounties_naics, by = c("county"))
 
+industry_trends_by_county <- industry_trends_by_county %>% 
+  mutate(
+    est = ifelse(is.na(est), 0, est)) %>% 
+  mutate(
+    data_difference = n - est) %>% 
+relocate(geometry, .after = data_difference)
+  
 
-
+cocounties_naics <- cocounties_naics %>% 
+  left_join(industry_trends_by_county)
+ggplot(cocounties_naics) +
+  geom_sf(data = cocounties_naics, aes(fill = data_difference)) +
+   coord_sf(
+    crs = st_crs(4269), 
+    xlim = c(-109.0603, -102.0405), 
+    ylim = c(36.99243, 41.00344), 
+    expand = FALSE, 
+    datum = NA
+    ) +
+ scale_fill_viridis_c(option = "magma") +
+  theme_minimal() +
+  labs(title = "Difference between PPP and Census data for Beauty Salons")
+ 
 ```
 
 ## Summary
 
 **Q5.** What is the most promising story idea that you have found during this exploration? How would you approach reporting it out and what other information/data would you need to do that? What would be the minimum story you could get from this, and what would be the maximum story?
 
-**A5.**
+**A5.** A small story could be about how the PPP loans are dominated by the largely populated counties such as Denver and how you can clearly see the influence of skiing in areas like Boulder who have almost half the population of Adams and El Paso counties, but roughly the same amount of loans. If you wanted to use per capita information, you could delve back into the town of Steamboat Springs and look at how the skiing industry legitimately keeps a city of 76 people afloat. Big picture, you could look into the legitimacy of the loans as there were incredibly large discrepancies in the data from the PPP database and that of the Census. Specifically the Taxi Service industry who had a 99% discrepancy, looking into those kinds of businesses could allow you to dig up something seriously wrong in the loan system or something being abused by businesses. 
