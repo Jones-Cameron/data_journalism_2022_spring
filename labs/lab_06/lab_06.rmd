@@ -75,6 +75,12 @@ internation_migration <- internation_migration %>%
 
 ```{r}
 # Write the code to produce your answer here
+internation_migration %>% 
+  group_by(jurisdiction) %>% 
+  mutate(
+    percent_migration = yr2010_2019/198996 * 100
+  ) %>% 
+arrange(desc(percent_migration))
 
 ```
 
